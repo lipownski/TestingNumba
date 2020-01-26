@@ -1,15 +1,17 @@
 from numba import jit
 import random
+from slow_stuff import monte_carlo_pi
 import time 
 import matplotlib.pyplot as plt
 import numpy as np
 min_i  = 0
-max_i =  30
+max_i =  25
 pots  = range(min_i,max_i)
 timing = np.zeros([len(pots),2])
 
+
 @jit(nopython=True)
-def monte_carlo_pi(nsamples):
+def jit_monte_carlo_pi(nsamples):
     acc = 0
     for i in range(nsamples):
         x = random.random()
@@ -18,14 +20,15 @@ def monte_carlo_pi(nsamples):
             acc += 1
     return 4.0 * acc / nsamples
 
+
 def py_monte_carlo_pi(nsamples):
-    acc = 0
-    for i in range(nsamples):
-        x = random.random()
-        y = random.random()
-        if (x ** 2 + y ** 2) < 1.0:
-            acc += 1
-    return 4.0 * acc / nsamples
+	acc = 0
+	for i in range(nsamples):
+		x = random.random()
+		y = random.random()
+		if (x ** 2 + y ** 2) < 1.0:
+			acc += 1
+	return 4.0 * acc / nsamples
   
   
     
@@ -39,7 +42,7 @@ for i in pots:
 	
 	
 	t0 = time.time()	
-	monte_carlo_pi(n)
+	jit_monte_carlo_pi(n)
 	timing[i-min_i][1] = time.time() -t0
 
 plt.plot(pots,timing, label=["Python","Jit"])
